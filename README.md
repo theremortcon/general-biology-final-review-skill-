@@ -1,18 +1,19 @@
-# 通用期末复习 Skill 模板
+# 期末知识框架 Skill
 
-这是一个面向 Codex / Agent 的通用期末复习 Skill 模板。
+这是一个面向 Codex / Agent 的中文期末知识框架 Skill。它的重点是根据课件和资料整理课程知识地图，而不是优先生成押题、刷题或冲刺计划。
 
 核心用途：
 
 1. 把课程资料 PDF / PPTX / DOCX 放进 `materials/`
 2. 用 MarkItDown 转成 Markdown
-3. 让 Codex 根据 `AGENTS.md` 和 `prompts/` 生成期末复习资料
-4. 输出知识框架、名词解释、易混点、可能考题、冲刺计划等文件
+3. 用脚本生成资料索引、章节索引和转换质量报告
+4. 让 Codex 生成章节知识树、概念关系、重点过程机制、易混点和资料来源索引
 
 ## 目录结构
 
 ```text
 final-review-skill-template/
+├── SKILL.md
 ├── AGENTS.md
 ├── README.md
 ├── requirements.txt
@@ -74,27 +75,34 @@ python scripts/build_course_context.py
 它会生成：
 
 ```text
-outputs/_course_context.md
 outputs/_materials_index.md
+outputs/_chapter_index.md
+outputs/_source_quality_report.md
+outputs/_course_context.md
 ```
 
-### 4. 让 Codex 生成复习资料
+### 4. 让 Codex 生成知识框架
 
 对 Codex 说：
 
 ```text
-请根据 AGENTS.md、prompts/universal_final_review_prompt.md，以及 outputs/_course_context.md，生成 outputs/ 中要求的所有期末复习文件。
+请根据 SKILL.md、outputs/_materials_index.md、outputs/_chapter_index.md、outputs/_source_quality_report.md 和 outputs/_course_context.md，生成课程知识框架。
 ```
 
-## 推荐输出文件
+## 默认输出文件
 
-Codex 应生成：
+Codex 默认生成：
 
 ```text
-outputs/总复习知识框架.md
-outputs/名词解释背诵表.md
-outputs/易混概念对比表.md
-outputs/重点过程机制整理.md
+outputs/课程知识总框架.md
+outputs/章节知识树.md
+outputs/概念关系与易混点.md
+outputs/资料来源索引.md
+```
+
+只有明确要求练题、冲刺计划、错题追踪时，才额外生成：
+
+```text
 outputs/可能考题.md
 outputs/三天冲刺计划.md
 outputs/错题与薄弱点追踪表.md
@@ -115,14 +123,14 @@ outputs/错题与薄弱点追踪表.md
 
 ## 注意
 
-这个模板不是“自动押题神器”。它的目标是把资料转成可复习的结构化材料：
+这个 Skill 不是“自动押题神器”。它的目标是把资料转成可复习的知识框架：
 
 - 知识树
-- 名词解释
-- 易混点
-- 过程机制
-- 可能题型
-- 冲刺复习计划
+- 概念关系
+- 易混概念对比
+- 重点过程机制
+- 资料来源索引
+- 转换质量提醒
 
 如果课件中有大量图片、扫描页、手写字、结构图，MarkItDown 可能无法完整提取，需要人工检查或用更强的 OCR / Docling 方案补充。
 
@@ -173,4 +181,13 @@ python scripts/convert_materials.py --prefer-docling
 - 是否把表格转换错行；
 - 是否把箭头流程识别错误。
 
-如果发现漏图，可以把对应页面截图单独给 AI，让它补充到复习资料里。
+如果发现漏图，可以把对应页面截图单独给 AI，让它补充到知识框架里。
+
+## Windows 中文显示
+
+所有 Markdown 和脚本输出都按 UTF-8 保存。若 PowerShell 中中文显示异常，可先运行：
+
+```powershell
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$env:PYTHONUTF8 = "1"
+```
